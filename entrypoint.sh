@@ -13,9 +13,16 @@ echo "TEST_REF:    ${TEST_REF}"
 #   exit 1
 # fi
 
+
+
 mkdir -p ~/.ssh
 echo "$SSH_KEY" > ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
+ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+actual=$(cat ~/.ssh/id_ed25519 | sha256sum | awk '{print $1}' | tr -d '\r')
+echo "actual=$actual"
+
 ssh -T git@github.com
 exit 1
 
