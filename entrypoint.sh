@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+[ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+
 echo "testMerge:   ${TEST_MERGE}"
 echo "dryRun:      ${DRY_RUN}"
 echo "DEFAULT_REF: ${DEFAULT_REF}"
@@ -14,7 +16,7 @@ mkdir -p "$SSH_DIR"
 chmod 700 "$SSH_DIR"
 echo "$SSH_KEY" > "$KEY_PATH"
 chmod 600 "$KEY_PATH"
-unset SSH_KEY
+# unset SSH_KEY
 
 ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
 
