@@ -38,6 +38,8 @@ git --version
 gh --version
 printenv | sort
 
+ssh -T git@github.com
+
 ## git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
 ## cd "${REPO_NAME}"
 
