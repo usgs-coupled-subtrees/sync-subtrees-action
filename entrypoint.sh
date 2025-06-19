@@ -18,7 +18,9 @@ echo "TEST_REF:    ${TEST_REF}"
 mkdir -p ~/.ssh
 echo "$SSH_KEY" > ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
-ssh-keyscan github.com >> ~/.ssh/known_hosts
+# ssh-keyscan github.com >> ~/.ssh/known_hosts
+# ssh-keyscan -t ed25519 github.com >> "${SSH_DIR}/known_hosts" 2>/dev/null
+ssh-keyscan -t ed25519 github.com >> "${SSH_DIR}/known_hosts"
 
 wc --lines ~/.ssh/id_ed25519
 
