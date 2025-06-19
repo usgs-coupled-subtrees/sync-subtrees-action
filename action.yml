@@ -39,6 +39,8 @@ runs:
     CI_SERVER_HOST: github.com
     # GROUP: ${{ github.repository_owner }}
     # REPO_NAME: ${{ github.repository.name }}
+    TEST_MERGE: ${{ inputs.testMerge }}
+    DRY_RUN: ${{ inputs.dryRun }}
     REPO_NAME: ${{ inputs.repoName }}
     GROUP: ${{ inputs.repoOwner }}
     RUN_NUMBER: ${{ inputs.runNumber }}
