@@ -5,6 +5,7 @@ echo "testMerge:   ${TEST_MERGE}"
 echo "dryRun:      ${DRY_RUN}"
 echo "DEFAULT_REF: ${DEFAULT_REF}"
 echo "TEST_REF:    ${TEST_REF}"
+echo "GROUP:       ${GROUP}"
 
 # expected="b7ff89ebb635bba5eac9652f5eae8a5123346c1da6ef42852d4494f58b0bf0cb"
 # actual=$(echo "$AUTH_TOKEN" | sha256sum | awk '{print $1}' | tr -d '\r')
@@ -34,6 +35,7 @@ echo "actual=$actual"
 # exit 1
 
 uname -a
+cat /etc/issue
 git --version
 gh --version
 printenv | sort
