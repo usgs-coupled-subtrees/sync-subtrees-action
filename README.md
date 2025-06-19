@@ -18,4 +18,6 @@ jobs:
         #   repo: ${{ github.event.repository.name }}
           defaultRef: ${{ github.event.repository.default_branch }}
         #   runNumber: ${{ github.run_number }}
-          authToken: ${{ secrets.X_ACCESS_TOKEN }}
+        #   authToken: ${{ secrets.X_ACCESS_TOKEN }}
+          sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
+        

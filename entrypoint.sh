@@ -6,65 +6,76 @@ echo "dryRun:      ${DRY_RUN}"
 echo "DEFAULT_REF: ${DEFAULT_REF}"
 echo "TEST_REF:    ${TEST_REF}"
 
-expected="b7ff89ebb635bba5eac9652f5eae8a5123346c1da6ef42852d4494f58b0bf0cb"
-actual=$(echo "$AUTH_TOKEN" | sha256sum | awk '{print $1}' | tr -d '\r')
-if [ "$actual" != "$expected" ]; then
-  echo "ERROR: Invalid AUTH_TOKEN" >&2
-  exit 1
-fi
+# expected="b7ff89ebb635bba5eac9652f5eae8a5123346c1da6ef42852d4494f58b0bf0cb"
+# actual=$(echo "$AUTH_TOKEN" | sha256sum | awk '{print $1}' | tr -d '\r')
+# if [ "$actual" != "$expected" ]; then
+#   echo "ERROR: Invalid AUTH_TOKEN" >&2
+#   exit 1
+# fi
+
+mkdir -p ~/.ssh
+echo "$SSH_KEY" > ~/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
+ssh -T git@github.com
+exit 1
 
 uname -a
 git --version
 gh --version
-printenv | sort
+## printenv | sort
 
-git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
-cd "${REPO_NAME}"
+## git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
+## cd "${REPO_NAME}"
 
 git config --global user.name "github-actions[bot]"
 git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-if [ "$TEST_MERGE" = "true" ]; then
-  REF=${TEST_REF}
-else
-  REF=${DEFAULT_REF}
-fi
+# git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
+# git clone git@github.com:usgs-coupled/iphreeqc.git
 
-if [ -z "${REF}" ]; then
-  echo "ERROR: REF not set" >&2
-  exit 1
-fi
+git clone git@${CI_SERVER_HOST}:${GROUP}/${REPO_NAME}.git
 
-echo "Using REF: ${REF}"
+# if [ "$TEST_MERGE" = "true" ]; then
+#   REF=${TEST_REF}
+# else
+#   REF=${DEFAULT_REF}
+# fi
 
-git fetch origin
-git checkout "${REF}" || git checkout -b "${REF}"
+# if [ -z "${REF}" ]; then
+#   echo "ERROR: REF not set" >&2
+#   exit 1
+# fi
 
-JSON=".github/subtrees.json"
-export GIT_EDITOR=true
+# echo "Using REF: ${REF}"
 
-mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "${JSON}" | envsubst)
+# git fetch origin
+# git checkout "${REF}" || git checkout -b "${REF}"
 
-for entry in "${entries[@]}"; do
-  read -r prefix url <<< "$entry"
-  echo "🧩 Pulling: $url into $prefix"
-  git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_REF"
-done
+# JSON=".github/subtrees.json"
+# export GIT_EDITOR=true
 
-if [ "$DRY_RUN" = "true" ]; then
-  echo "✅ Pull complete. Dry run enabled: skipping pushes"
-  exit 0
-fi
+# mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "${JSON}" | envsubst)
 
-echo "✅ Pull complete. Pushing subtrees back to remotes..."
+# for entry in "${entries[@]}"; do
+#   read -r prefix url <<< "$entry"
+#   echo "🧩 Pulling: $url into $prefix"
+#   git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_REF"
+# done
 
-for entry in "${entries[@]}"; do
-  read -r prefix url <<< "$entry"
-  echo "📤 Pushing $prefix to $url (branch: $REF)"
-  git subtree push --prefix "$prefix" "$url" "$REF" > /dev/null 2>&1 || echo "⚠️ Push failed for $prefix" >&2
-done
+# if [ "$DRY_RUN" = "true" ]; then
+#   echo "✅ Pull complete. Dry run enabled: skipping pushes"
+#   exit 0
+# fi
 
-echo "Pushing to origin..."
-git push origin "${REF}"
+# echo "✅ Pull complete. Pushing subtrees back to remotes..."
 
-echo "✅ Sync complete."
+# for entry in "${entries[@]}"; do
+#   read -r prefix url <<< "$entry"
+#   echo "📤 Pushing $prefix to $url (branch: $REF)"
+#   git subtree push --prefix "$prefix" "$url" "$REF" > /dev/null 2>&1 || echo "⚠️ Push failed for $prefix" >&2
+# done
+
+# echo "Pushing to origin..."
+# git push origin "${REF}"
+
+# echo "✅ Sync complete."

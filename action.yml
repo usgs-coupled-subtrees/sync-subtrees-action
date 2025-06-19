@@ -19,29 +19,20 @@ inputs:
   # runNumber:
   #   description: 'GitHub run number'
   #   required: true
-  authToken:
-    description: 'GitHub PAT with repo access'
+  # authToken:
+  #   description: 'GitHub PAT with repo access'
+  #   required: true
+  sshKey:
+    description: 'SSH private key for authentication'
     required: true
 
-runs:
-  using: "composite"
-  steps:
-    - name: Install dependencies
-      shell: bash
-      run: |
-        apt-get update && apt-get install -y curl gettext jq unzip
-        curl -fsSL https://github.com/cli/cli/releases/download/v2.74.0/gh_2.74.0_linux_amd64.tar.gz | tar -xz
-        cp gh_*/bin/gh /usr/local/bin
 
-    - name: Run subtree sync
-      shell: bash
-      run: ${{ github.action_path }}/entrypoint.sh
-      env:
-        CI_SERVER_HOST: github.com
-        GROUP: ${{ github.repository_owner }}
-        AUTH_TOKEN: ${{ inputs.authToken }}
-        DEFAULT_REF: ${{ inputs.defaultRef }}
-        TEST_REF: _gha-${{ github.event.repository.name }}-sync-subtrees-${{ github.run_number }}
-        DRY_RUN: ${{ inputs.dryRun }}
-        TEST_MERGE: ${{ inputs.testMerge }}
-        # REPO_NAME: ${{ inputs.repo }}
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    CI_SERVER_HOST: github.com
+    GROUP: ${{ github.repository_owner }}
+    REPO_NAME: ${{ github.repository.name }}
+    RUN_NUMBER: ${{ github.run_number }}
+  args: []
