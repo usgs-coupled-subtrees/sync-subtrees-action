@@ -16,14 +16,19 @@ inputs:
   defaultRef:
     description: 'Default branch name'
     required: true
-  # runNumber:
-  #   description: 'GitHub run number'
-  #   required: true
+  runNumber:
+    description: 'GitHub run number'
+    required: true
   # authToken:
   #   description: 'GitHub PAT with repo access'
   #   required: true
   sshKey:
     description: 'SSH private key for authentication'
+    required: true
+  repoOwner:
+    required: true
+  repoName:
+    description: 'Repository name'
     required: true
 
 
@@ -32,7 +37,11 @@ runs:
   image: Dockerfile
   env:
     CI_SERVER_HOST: github.com
-    GROUP: ${{ github.repository_owner }}
-    REPO_NAME: ${{ github.repository.name }}
-    RUN_NUMBER: ${{ github.run_number }}
+    # GROUP: ${{ github.repository_owner }}
+    # REPO_NAME: ${{ github.repository.name }}
+    REPO_NAME: ${{ inputs.repoName }}
+    GROUP: ${{ inputs.repoOwner }}
+    RUN_NUMBER: ${{ inputs.runNumber }}
+    DEFAULT_REF: ${{ inputs.defaultRef }}
+    SSH_KEY: ${{ inputs.sshKey }}
   args: []
