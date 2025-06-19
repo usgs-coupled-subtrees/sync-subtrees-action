@@ -14,10 +14,13 @@ echo "TEST_REF:    ${TEST_REF}"
 # fi
 
 
-
 mkdir -p ~/.ssh
 echo "$SSH_KEY" > ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
+unset SSH_KEY
+
+set -euox pipefail
+
 # ssh-keyscan github.com >> ~/.ssh/known_hosts
 # ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
 ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
@@ -33,7 +36,7 @@ echo "actual=$actual"
 uname -a
 git --version
 gh --version
-## printenv | sort
+printenv | sort
 
 ## git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
 ## cd "${REPO_NAME}"
