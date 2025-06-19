@@ -25,8 +25,8 @@ wc --lines ~/.ssh/id_ed25519
 actual=$(cat ~/.ssh/id_ed25519 | sha256sum | awk '{print $1}' | tr -d '\r')
 echo "actual=$actual"
 
-ssh -T git@github.com
-exit 1
+# ssh -T git@github.com
+# exit 1
 
 uname -a
 git --version
@@ -43,6 +43,8 @@ git config --global user.email "41898282+github-actions[bot]@users.noreply.githu
 # git clone git@github.com:usgs-coupled/iphreeqc.git
 
 git clone git@${CI_SERVER_HOST}:${GROUP}/${REPO_NAME}.git
+cd "${REPO_NAME}"
+
 
 # if [ "$TEST_MERGE" = "true" ]; then
 #   REF=${TEST_REF}
