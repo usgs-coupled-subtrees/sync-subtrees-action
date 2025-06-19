@@ -20,6 +20,8 @@ echo "$SSH_KEY" > ~/.ssh/id_ed25519
 chmod 600 ~/.ssh/id_ed25519
 ssh-keyscan github.com >> ~/.ssh/known_hosts
 
+wc --lines ~/.ssh/id_ed25519
+
 actual=$(cat ~/.ssh/id_ed25519 | sha256sum | awk '{print $1}' | tr -d '\r')
 echo "actual=$actual"
 
