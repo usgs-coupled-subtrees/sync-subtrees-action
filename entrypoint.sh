@@ -7,32 +7,16 @@ echo "DEFAULT_REF: ${DEFAULT_REF}"
 echo "TEST_REF:    ${TEST_REF}"
 echo "GROUP:       ${GROUP}"
 
-# expected="b7ff89ebb635bba5eac9652f5eae8a5123346c1da6ef42852d4494f58b0bf0cb"
-# actual=$(echo "$AUTH_TOKEN" | sha256sum | awk '{print $1}' | tr -d '\r')
-# if [ "$actual" != "$expected" ]; then
-#   echo "ERROR: Invalid AUTH_TOKEN" >&2
-#   exit 1
-# fi
 
-
-mkdir -p ~/.ssh
-echo "$SSH_KEY" > ~/.ssh/id_ed25519
-chmod 600 ~/.ssh/id_ed25519
+SSH_DIR="$(getent passwd $(whoami) | cut -d: -f6)/.ssh"
+KEY_PATH="${SSH_DIR}/id_ed25519"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+echo "$SSH_KEY" > "$KEY_PATH"
+chmod 600 "$KEY_PATH"
 unset SSH_KEY
 
-set -euox pipefail
-
-# ssh-keyscan github.com >> ~/.ssh/known_hosts
-# ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
-ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-
-wc --lines ~/.ssh/id_ed25519
-
-actual=$(cat ~/.ssh/id_ed25519 | sha256sum | awk '{print $1}' | tr -d '\r')
-echo "actual=$actual"
-
-# ssh -T git@github.com
-# exit 1
+ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
 
 uname -a
 cat /etc/issue
