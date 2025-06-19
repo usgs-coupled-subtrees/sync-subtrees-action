@@ -30,6 +30,9 @@ inputs:
   repoName:
     description: 'Repository name'
     required: true
+  testRef:
+    description: 'Test branch name'
+    required: false
 
 
 runs:
@@ -45,5 +48,6 @@ runs:
     GROUP: ${{ inputs.repoOwner }}
     RUN_NUMBER: ${{ inputs.runNumber }}
     DEFAULT_REF: ${{ inputs.defaultRef }}
+    TEST_REF: _gha-${{ inputs.repoName }}-sync-subtrees-${{ inputs.runNumber }}
     SSH_KEY: ${{ inputs.sshKey }}
   args: []
