@@ -5,12 +5,13 @@ set -eo pipefail
 
 set -u
 
-echo "testMerge:   ${TEST_MERGE}"
-echo "dryRun:      ${DRY_RUN}"
-echo "DEFAULT_REF: ${DEFAULT_REF}"
-echo "TEST_REF:    ${TEST_REF}"
-echo "GROUP:       ${GROUP}"
-
+if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
+  echo "testMerge:   ${TEST_MERGE}"
+  echo "dryRun:      ${DRY_RUN}"
+  echo "DEFAULT_REF: ${DEFAULT_REF}"
+  echo "TEST_REF:    ${TEST_REF}"
+  echo "GROUP:       ${GROUP}"
+fi
 
 SSH_DIR="$(getent passwd $(whoami) | cut -d: -f6)/.ssh"
 KEY_PATH="${SSH_DIR}/id_ed25519"
@@ -22,11 +23,13 @@ chmod 600 "$KEY_PATH"
 
 ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
 
-uname -a
-cat /etc/issue
-git --version
-gh --version
-printenv | sort
+if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
+  uname -a
+  cat /etc/issue
+  git --version
+  gh --version
+  printenv | sort
+fi
 
 ssh -T git@github.com
 
