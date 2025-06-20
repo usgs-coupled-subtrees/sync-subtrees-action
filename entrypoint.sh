@@ -53,7 +53,7 @@ fi
 echo "Using REF: ${REF}"
 
 git fetch origin
-git checkout "${REF}" || git checkout -b "${REF}"
+git checkout "${REF}" 2>/dev/null || git checkout -b "${REF}"
 
 # JSON=".github/subtrees.json"
 # export GIT_EDITOR=true
