@@ -1,7 +1,9 @@
 #!/bin/bash
-set -euo pipefail
+set -eo pipefail
 
 [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+
+set -u
 
 echo "testMerge:   ${TEST_MERGE}"
 echo "dryRun:      ${DRY_RUN}"
