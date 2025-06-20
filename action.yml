@@ -50,5 +50,4 @@ runs:
     DEFAULT_REF: ${{ inputs.defaultRef }}
     TEST_REF: _gha-${{ inputs.repoName }}-sync-subtrees-${{ inputs.runNumber }}
     SSH_KEY: ${{ inputs.sshKey }}
-    ACTIONS_RUNNER_DEBUG: ${{ ACTIONS_RUNNER_DEBUG }}
   args: []
