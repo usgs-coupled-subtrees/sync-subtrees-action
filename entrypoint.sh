@@ -3,8 +3,6 @@ set -eo pipefail
 
 [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
 
-set -u
-
 if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
   echo "testMerge:   ${TEST_MERGE}"
   echo "dryRun:      ${DRY_RUN}"
@@ -13,16 +11,6 @@ if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
   echo "GROUP:       ${GROUP}"
 fi
 
-SSH_DIR="$(getent passwd $(whoami) | cut -d: -f6)/.ssh"
-KEY_PATH="${SSH_DIR}/id_ed25519"
-mkdir -p "$SSH_DIR"
-chmod 700 "$SSH_DIR"
-echo "$SSH_KEY" > "$KEY_PATH"
-chmod 600 "$KEY_PATH"
-# unset SSH_KEY
-
-ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
-
 if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
   uname -a
   cat /etc/issue
@@ -30,6 +18,26 @@ if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
   gh --version
   printenv | sort
 fi
+
+# Check if required environment variables are set
+if [ -z "${SSH_KEY}" ]; then
+  echo "ERROR: SSH_KEY environment variable is not set." >&2
+  exit 1
+fi
+ 
+
+SSH_DIR="$(getent passwd $(whoami) | cut -d: -f6)/.ssh"
+KEY_PATH="${SSH_DIR}/id_ed25519"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+echo "$SSH_KEY" > "$KEY_PATH"
+chmod 600 "$KEY_PATH"
+unset SSH_KEY
+
+set -u
+
+ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
+
 
 ssh -T git@github.com
 
