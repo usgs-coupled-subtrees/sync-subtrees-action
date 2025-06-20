@@ -1,6 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
+# ACTIONS_RUNNER_DEBUG doesn't work yet
 [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
 
 if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
@@ -25,7 +26,6 @@ if [ -z "${SSH_KEY}" ]; then
   exit 1
 fi
  
-
 SSH_DIR="$(getent passwd $(whoami) | cut -d: -f6)/.ssh"
 KEY_PATH="${SSH_DIR}/id_ed25519"
 mkdir -p "$SSH_DIR"
@@ -38,37 +38,22 @@ set -u
 
 ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
 
-
-ssh -T git@github.com
-
-## git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
-## cd "${REPO_NAME}"
-
 git config --global user.name "github-actions[bot]"
 git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-# git clone https://${AUTH_TOKEN}@${CI_SERVER_HOST}/${GROUP}/${REPO_NAME}.git
-# git clone git@github.com:usgs-coupled/iphreeqc.git
 
 git clone git@${CI_SERVER_HOST}:${GROUP}/${REPO_NAME}.git
 cd "${REPO_NAME}"
 
+if [ "$TEST_MERGE" = "true" ]; then
+  REF=${TEST_REF}
+else
+  REF=${DEFAULT_REF}
+fi
 
-# if [ "$TEST_MERGE" = "true" ]; then
-#   REF=${TEST_REF}
-# else
-#   REF=${DEFAULT_REF}
-# fi
+echo "Using REF: ${REF}"
 
-# if [ -z "${REF}" ]; then
-#   echo "ERROR: REF not set" >&2
-#   exit 1
-# fi
-
-# echo "Using REF: ${REF}"
-
-# git fetch origin
-# git checkout "${REF}" || git checkout -b "${REF}"
+git fetch origin
+git checkout "${REF}" || git checkout -b "${REF}"
 
 # JSON=".github/subtrees.json"
 # export GIT_EDITOR=true
