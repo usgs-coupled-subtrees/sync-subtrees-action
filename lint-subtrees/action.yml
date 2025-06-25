@@ -1,0 +1,69 @@
+name: "Lint subtrees.json"
+description: "Validate structure and pushability of subtrees.json Git remotes"
+inputs:
+  ssh-private-key:
+    required: true
+    description: "SSH private key for validating push access to subtree URLs"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Lint subtrees.json
+      shell: bash
+      run: |
+        set -e
+
+        JSON="$(pwd)/.github/subtrees.json"
+        echo "Validating $JSON..."
+
+        jq empty "$JSON"
+
+        missing=$(jq 'to_entries | map(select(.value.prefix == null or .value.url == null)) | length' "$JSON")
+        if [ "$missing" -ne 0 ]; then
+          echo "❌ Some entries are missing 'prefix' or 'url'"
+          jq 'to_entries | map(select(.value.prefix == null or .value.url == null))' "$JSON"
+          exit 1
+        fi
+
+        bad_urls=$(jq -r 'to_entries[] | select(.value.url | test("git@.+\\.git$") | not) | .value.url' "$JSON")
+        if [ -n "$bad_urls" ]; then
+          echo "❌ Invalid URLs found:"
+          echo "$bad_urls"
+          exit 1
+        fi
+
+        SSH_DIR="$HOME/.ssh"
+        KEY_PATH="${SSH_DIR}/id_ed25519"
+        mkdir -p "$SSH_DIR"
+        chmod 700 "$SSH_DIR"
+        echo "${{ inputs.ssh-private-key }}" > "$KEY_PATH"
+        chmod 600 "$KEY_PATH"
+        ssh-keyscan -t ed25519 github.com >> "${SSH_DIR}/known_hosts" 2>/dev/null
+        trap 'rm -rf "$SSH_DIR"' EXIT
+
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global init.defaultBranch main
+
+        mkdir -p /tmp/subtree-push-test
+        pushd /tmp/subtree-push-test > /dev/null
+        git init -q
+        git commit --allow-empty -m "Test commit" > /dev/null
+
+        mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "$JSON")
+        for entry in "${entries[@]}"; do
+          read -r prefix url <<< "$entry"
+          test_branch="__$prefix"
+          if git push --quiet "$url" "HEAD:refs/heads/$test_branch" 2>/dev/null; then
+            echo "✅ Push OK: $url"
+            git push --quiet "$url" --delete "$test_branch" || true
+          else
+            echo "❌ Push FAILED: $url"
+            exit 1
+          fi
+        done
+
+        echo "✅ subtrees.json looks good!"
