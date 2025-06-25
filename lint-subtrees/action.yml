@@ -53,7 +53,7 @@ runs:
         git init -q
         git commit --allow-empty -m "Test commit" > /dev/null
 
-        mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "$JSON")
+        mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "$JSON" | envsubst)
         for entry in "${entries[@]}"; do
           read -r prefix url <<< "$entry"
           test_branch="__$prefix"
