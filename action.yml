@@ -40,7 +40,7 @@ runs:
     # GROUP: ${{ inputs.repoOwner }}
     # RUN_NUMBER: ${{ inputs.run_number }}
     DEFAULT_BRANCH: ${{ inputs.default_branch }}
-    TEST_REF: _gha-${{ inputs.repository_name }}-sync-subtrees-${{ inputs.run_number }}
+    TEST_BRANCH: _gha-${{ inputs.repository_name }}-sync-subtrees-${{ inputs.run_number }}
     SSH_PRIVATE_KEY: ${{ inputs.ssh_private_key }}
     GITHUB_TOKEN: ${{ inputs.github_token }}
   args: []
