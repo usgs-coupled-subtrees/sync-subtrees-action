@@ -89,7 +89,7 @@ done
 
 set -x
 
-echo "$GITHUB_TOKEN" | gh auth login --with-token
+### echo "$GITHUB_TOKEN" | gh auth login --with-token
 
 # backup branch protection rules
 gh api repos/${GITHUB_REPOSITORY}/branches/master/protection \
