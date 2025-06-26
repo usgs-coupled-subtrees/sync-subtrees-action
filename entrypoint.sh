@@ -87,6 +87,8 @@ for entry in "${entries[@]}"; do
   git subtree push --prefix "$prefix" "$url" "$REF" > /dev/null 2>&1 || echo "⚠️ Push failed for $prefix" >&2
 done
 
+set -x
+
 echo "$GITHUB_TOKEN" | gh auth login --with-token
 
 # backup branch protection rules
