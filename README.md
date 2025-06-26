@@ -15,9 +15,9 @@ jobs:
         with:
           dryRun: true
           testMerge: false
-        #   repo: ${{ github.event.repository.name }}
-          defaultRef: ${{ github.event.repository.default_branch }}
-        #   runNumber: ${{ github.run_number }}
-        #   authToken: ${{ secrets.X_ACCESS_TOKEN }}
-          sshKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          repository_name: ${{ github.event.repository.name }}
+          default_branch: ${{ github.event.repository.default_branch }}
+          run_number: ${{ github.run_number }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
         
