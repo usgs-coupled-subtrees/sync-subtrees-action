@@ -87,27 +87,6 @@ for entry in "${entries[@]}"; do
   git subtree push --prefix "$prefix" "$url" "$REF" > /dev/null 2>&1 || echo "⚠️ Push failed for $prefix" >&2
 done
 
-# set -x
-
-# ### echo "$GITHUB_TOKEN" | gh auth login --with-token
-
-# # backup branch protection rules
-# gh api repos/${GITHUB_REPOSITORY}/branches/master/protection \
-#   -H "Accept: application/vnd.github.luke-cage-preview+json" > protection.json
-
-# # disable branch protection rules
-# gh api repos/${GITHUB_REPOSITORY}/branches/${REF}/protection \
-#   -X DELETE \
-#   -H "Accept: application/vnd.github.luke-cage-preview+json" \
-#   || echo "⚠️ No protection rules to delete for branch ${REF}"
-
 echo "Pushing to origin..."
 git push origin "${REF}"
-
-# # restore branch protection rules
-# gh api -X PUT repos/${GITHUB_REPOSITORY}/branches/master/protection \
-#   -H "Accept: application/vnd.github.luke-cage-preview+json" \
-#   --input protection.json
-# echo "Branch protection restored"
-          
 echo "✅ Sync complete."
