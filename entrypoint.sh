@@ -46,8 +46,6 @@ ssh-keyscan -t ed25519 github.com >> ${SSH_DIR}/known_hosts 2>/dev/null
 git config --global user.name "github-actions[bot]"
 git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-export CI_SERVER_HOST=${GITHUB_SERVER_URL#https://}
-export GROUP=${GITHUB_REPOSITORY_OWNER}
 REPO_NAME=${GITHUB_REPOSITORY##*/}
 git clone git@${CI_SERVER_HOST}:${GITHUB_REPOSITORY}.git
 cd "${REPO_NAME}"
