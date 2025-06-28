@@ -19,5 +19,4 @@ jobs:
           default_branch: ${{ github.event.repository.default_branch }}
           run_number: ${{ github.run_number }}
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
         
