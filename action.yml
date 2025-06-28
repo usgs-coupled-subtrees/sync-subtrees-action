@@ -16,9 +16,6 @@ inputs:
   run_number:
     description: 'GitHub run number'
     required: true
-  github_token:
-    description: "GitHub token with admin rights"
-    required: true
   ssh_private_key:
     description: 'SSH private key for authentication'
     required: true
@@ -31,16 +28,9 @@ runs:
   using: docker
   image: Dockerfile
   env:
-    # CI_SERVER_HOST: github.com
-    # GROUP: ${{ github.repository_owner }}
-    # REPO_NAME: ${{ github.repository.name }}
     TEST_MERGE: ${{ inputs.testMerge }}
     DRY_RUN: ${{ inputs.dryRun }}
-    # REPO_NAME: ${{ inputs.repository_name }}
-    # GROUP: ${{ inputs.repoOwner }}
-    # RUN_NUMBER: ${{ inputs.run_number }}
     DEFAULT_BRANCH: ${{ inputs.default_branch }}
     TEST_BRANCH: _gha-${{ inputs.repository_name }}-sync-subtrees-${{ inputs.run_number }}
     SSH_PRIVATE_KEY: ${{ inputs.ssh_private_key }}
-    GITHUB_TOKEN: ${{ inputs.github_token }}
   args: []
