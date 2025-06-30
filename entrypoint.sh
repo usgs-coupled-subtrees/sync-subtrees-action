@@ -7,7 +7,8 @@ if [ "$RUNNER_OS" != "Linux" ]; then
 fi
 
 # ACTIONS_RUNNER_DEBUG doesn't work yet
-[ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+# [ -n "$ACTIONS_RUNNER_DEBUG" ] && set -x
+set -x
 
 if [ -n "$ACTIONS_RUNNER_DEBUG" ]; then
   echo "testMerge:      ${TEST_MERGE}"
