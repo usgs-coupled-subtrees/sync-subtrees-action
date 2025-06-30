@@ -1,0 +1,52 @@
+name: "Lint superprojects.json"
+description: "Validate structure and pushability of superprojects.json Git remotes"
+inputs:
+  ssh-private-key:
+    required: true
+    description: "SSH private key for validating push access to superprojects repositorys"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Lint superprojects.json
+      shell: bash
+      run: |
+        set -e
+
+        JSON="$(pwd)/.github/superprojects.json"
+        echo "Validating $JSON..."
+
+        # Check if the JSON is well-formed
+        jq empty "$JSON"
+
+        # Check for exactly 1 top-level object
+        count=$(jq 'length' "$JSON")
+        if [ "$count" -ne 1 ]; then
+          echo "❌ superprojects.json must contain exactly one top-level object"
+          exit 1
+        fi
+
+        # Check if superprojects exists
+        if ! jq -e '.[].superprojects' "$JSON" > /dev/null; then
+          echo "❌ Error: 'superprojects' key not found."
+          exit 1
+        fi
+
+        # Check if superprojects is an array
+        if ! jq -e '.[].superprojects | type == "array"' "$JSON" > /dev/null; then
+          echo "❌ Error: 'superprojects' is not an array."
+          exit 1
+        fi
+
+        # Check that all elements are strings
+        if ! jq -e '.[].superprojects | all(.[]; type == "string")' "$JSON" > /dev/null; then
+          echo "❌ Error: Not all elements in 'superprojects' are strings."
+          echo "🔍 Offending entries:"
+          jq -r '.[].superprojects | map(select(type != "string"))[]' "$JSON"
+          exit 1
+        fi
+
+        echo "✅ superprojects.json looks good!"
