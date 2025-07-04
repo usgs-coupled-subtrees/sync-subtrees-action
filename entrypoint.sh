@@ -90,5 +90,5 @@ git push origin "${REF}"
 
 for entry in "${entries[@]}"; do
   read -r prefix url repo <<< "$entry"
-  echo "gh workflow run subtree.yml --repo $repo --ref $REF --field testMerge=${TEST_MERGE}" 
+  gh workflow run subtree.yml --repo ${repo} --ref ${DEFAULT_BRANCH} --field testMerge=${TEST_MERGE}
 done
