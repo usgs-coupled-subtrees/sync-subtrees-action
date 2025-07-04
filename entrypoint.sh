@@ -70,7 +70,6 @@ for entry in "${entries[@]}"; do
   read -r prefix url repo <<< "$entry"
   echo "🧩 Pulling: $url into $prefix"
   git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_BRANCH"
-  echo "gh workflow run subtree.yml --repo $repo --ref $DEFAULT_BRANCH --field dryRun=${DRY_RUN}" 
 done
 
 if [ "$DRY_RUN" = "true" ]; then
@@ -81,11 +80,15 @@ fi
 echo "✅ Pull complete. Pushing subtrees back to remotes..."
 
 for entry in "${entries[@]}"; do
-  read -r prefix url <<< "$entry"
+  read -r prefix url repo <<< "$entry"
   echo "📤 Pushing $prefix to $url (branch: $REF)"
   git subtree push --prefix "$prefix" "$url" "$REF" > /dev/null 2>&1 || echo "⚠️ Push failed for $prefix" >&2
 done
 
 echo "Pushing to origin..."
 git push origin "${REF}"
-echo "✅ Sync complete."
+
+for entry in "${entries[@]}"; do
+  read -r prefix url repo <<< "$entry"
+  echo "gh workflow run subtree.yml --repo $repo --ref $REF --field testMerge=${TEST_MERGE}" 
+done
