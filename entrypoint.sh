@@ -67,9 +67,10 @@ export GIT_EDITOR=true
 mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "${JSON}" | envsubst)
 
 for entry in "${entries[@]}"; do
-  read -r prefix url <<< "$entry"
+  read -r prefix url repo <<< "$entry"
   echo "🧩 Pulling: $url into $prefix"
   git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_BRANCH"
+  echo "gh workflow run subtree.yml --repo $repo --ref $DEFAULT_BRANCH --field dryRun=${DRY_RUN}" 
 done
 
 if [ "$DRY_RUN" = "true" ]; then
