@@ -64,7 +64,7 @@ git checkout "${REF}" 2>/dev/null || git checkout -b "${REF}"
 JSON="$(pwd)/.github/subtrees.json"
 export GIT_EDITOR=true
 
-mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "${JSON}" | envsubst)
+mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url) \(.value.repo)"' "${JSON}" | envsubst)
 
 for entry in "${entries[@]}"; do
   read -r prefix url repo <<< "$entry"
