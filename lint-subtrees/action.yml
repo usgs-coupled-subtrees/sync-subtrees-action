@@ -47,11 +47,6 @@ runs:
           exit 1
         fi
         
-        if ! jq -e 'to_entries | map(select(.value.prefix | test("^[a-zA-Z0-9_.-]+$"))) | length == length(.)' "$JSON" > /dev/null; then
-          echo "❌ Invalid prefixes found. Prefixes must be alphanumeric with optional underscores or dashes."
-          exit 1
-        fi
-
         SSH_DIR="$HOME/.ssh"
         KEY_PATH="${SSH_DIR}/id_ed25519"
         mkdir -p "$SSH_DIR"
