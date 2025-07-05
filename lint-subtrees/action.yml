@@ -21,10 +21,10 @@ runs:
 
         jq empty "$JSON"
 
-        missing=$(jq 'to_entries | map(select(.value.prefix == null or .value.url == null)) | length' "$JSON")
+        missing=$(jq 'to_entries | map(select(.value.prefix == null or .value.url == null or .value.repo == null)) | length' "$JSON")
         if [ "$missing" -ne 0 ]; then
-          echo "❌ Some entries are missing 'prefix' or 'url'"
-          jq 'to_entries | map(select(.value.prefix == null or .value.url == null))' "$JSON"
+          echo "❌ Some entries are missing 'prefix', 'url' or 'repo' fields:"
+          jq 'to_entries | map(select(.value.prefix == null or .value.url == null or .value.repo == null))' "$JSON"
           exit 1
         fi
 
@@ -32,6 +32,23 @@ runs:
         if [ -n "$bad_urls" ]; then
           echo "❌ Invalid URLs found:"
           echo "$bad_urls"
+          exit 1
+        fi
+
+        bad_repos=$(jq -r '
+          to_entries[] 
+          | select((.value.repo? | test("^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$") | not)) 
+          | .value.repo // "<missing repo field>"
+        ' "$JSON")
+
+        if [ -n "$bad_repos" ]; then
+          echo "❌ Invalid repo values found:"
+          echo "$bad_repos"
+          exit 1
+        fi
+        
+        if ! jq -e 'to_entries | map(select(.value.prefix | test("^[a-zA-Z0-9_.-]+$"))) | length == length(.)' "$JSON" > /dev/null; then
+          echo "❌ Invalid prefixes found. Prefixes must be alphanumeric with optional underscores or dashes."
           exit 1
         fi
 
