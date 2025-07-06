@@ -69,8 +69,7 @@ mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url) \(.
 for entry in "${entries[@]}"; do
   read -r prefix url repo <<< "$entry"
   echo "🧩 Pulling: $url into $prefix"
-  ## git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_BRANCH"
-  git subtree pull --prefix "$prefix" "$url" "$DEFAULT_BRANCH"
+  git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_BRANCH"
 done
 
 if [ "$DRY_RUN" = "true" ]; then
