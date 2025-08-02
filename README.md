@@ -11,7 +11,7 @@ jobs:
     container:
       image: buildpack-deps:bionic-scm
     steps:
-      - uses: usgs-coupled/sync-subtrees-action@main
+      - uses: usgs-coupled-subtrees/sync-subtrees-action@main
         with:
           dryRun: true
           testMerge: false
