@@ -22,7 +22,7 @@ jobs:
   lint-superprojects:
     runs-on: ubuntu-latest
     steps:
-      - uses: usgs-coupled/sync-subtrees-action/lint-superprojects/@main
+      - uses: usgs-coupled-subtrees/sync-subtrees-action/lint-superprojects/@main
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 ```

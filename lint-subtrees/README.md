@@ -15,6 +15,6 @@ jobs:
   lint-subtrees:
     runs-on: ubuntu-latest
     steps:
-      - uses: usgs-coupled/sync-subtrees-action/lint-subtrees/@main
+      - uses: usgs-coupled-subtrees/sync-subtrees-action/lint-subtrees/@main
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
