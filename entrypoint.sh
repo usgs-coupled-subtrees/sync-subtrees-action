@@ -88,10 +88,18 @@ done
 echo "Pushing to origin..."
 git push origin "${REF}"
 
-for entry in "${entries[@]}"; do
-  read -r prefix url repo <<< "$entry"
-  echo "🚀 Triggering subtree.yml workflow for ${repo} (prefix: ${prefix})"
-  gh workflow run subtree.yml --repo ${repo} --ref ${DEFAULT_BRANCH} --field testMerge=${TEST_MERGE}
-  # echo "🚀 Triggering lint-subtrees.yml workflow for ${repo} (prefix: ${prefix})"
-  # gh workflow run lint-subtrees.yml --repo ${repo} --ref ${DEFAULT_BRANCH}
-done
+# trigger downstream workflows
+JSON="$(pwd)/.github/superprojects.json"
+
+if [[ -e "${JSON}" ]]; then
+  echo "🚀 Triggering downstream workflows..."
+  mapfile -t entries < <(jq -r '.[].superprojects[]' "${JSON}" | envsubst)
+
+  for repo in "${entries[@]}"; do
+    echo "🚀 Triggering subtree.yml workflow for ${repo}"
+    gh workflow run subtree.yml --repo ${repo} --ref ${DEFAULT_BRANCH} --field testMerge=${TEST_MERGE}
+  done
+else
+  echo "${JSON} not found, no downstream workflows to trigger"
+fi
+
