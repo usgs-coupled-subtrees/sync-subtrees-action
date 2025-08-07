@@ -68,6 +68,13 @@ mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url) \(.
 
 for entry in "${entries[@]}"; do
   read -r prefix url repo <<< "$entry"
+  # {{ test simplifying yaml
+  test_url=git@${CI_SERVER_HOST}:${repo}.git
+  if [ "$url" != "$test_url" ]; then
+    echo "⚠️ URL mismatch for $prefix: expected ${url}, got ${test_url}" >&2
+    exit 1
+  fi
+  # }} test simplifying yaml
   echo "🧩 Pulling: $url into $prefix"
   git subtree pull --prefix "$prefix" --squash "$url" "$DEFAULT_BRANCH"
 done
