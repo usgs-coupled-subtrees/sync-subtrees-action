@@ -28,13 +28,6 @@ runs:
           exit 1
         fi
 
-        bad_urls=$(jq -r 'to_entries[] | select(.value.url | test("git@.+\\.git$") | not) | .value.url' "$JSON")
-        if [ -n "$bad_urls" ]; then
-          echo "❌ Invalid URLs found:"
-          echo "$bad_urls"
-          exit 1
-        fi
-
         bad_repos=$(jq -r '
           to_entries[] 
           | select((.value.repo? | test("^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$") | not)) 
@@ -65,9 +58,10 @@ runs:
         git init -q
         git commit --allow-empty -m "Test commit" > /dev/null
 
-        mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.url)"' "$JSON" | envsubst)
+        mapfile -t entries < <(jq -r 'to_entries[] | "\(.value.prefix) \(.value.repo)"' "$JSON" | envsubst)
         for entry in "${entries[@]}"; do
-          read -r prefix url <<< "$entry"
+          read -r prefix repo <<< "$entry"
+          url=git@${CI_SERVER_HOST}:${repo}.git
           test_branch="__$prefix"
           if git push --quiet "$url" "HEAD:refs/heads/$test_branch" 2>/dev/null; then
             echo "✅ Push OK: $url"
